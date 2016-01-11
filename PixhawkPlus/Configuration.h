@@ -1,3 +1,32 @@
+#pragma region Copyright
+//This file is part of Pixhawk Plus
+//
+//Jim Rowe Copyright (c) 2015
+//https://github.com/jrowe88/PixhawkPlus
+//
+//  Original concept and big props to Rolf Blomgren - http://diydrones.com/forum/topics/amp-to-frsky-x8r-sport-converter
+//  Adapted and modified from numerous other contributors:
+//     Jochen Kielkopf - https://github.com/Clooney82/MavLink_FrSkySPort/   
+//     Alf Pettersson
+//     Christian Swahn
+//     Luis Vale
+//     Michael Wolkstein
+//     Jochen Kielkopf
+//
+//Pixhawk Plus is free software : you can redistribute it and / or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Foobar is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with Pixhawk Plus. If not, see <http://www.gnu.org/licenses/>.
+//
+#pragma endregion
 #ifndef _CONFIGURATION_h
 #define _CONFIGURATION_h
 
@@ -14,7 +43,7 @@
 */
 #define debugSerial         Serial
 #define debugSerialBaud     57600
-#define _MavLinkSerial      Serial1
+#define _MavLinkSerial      Serial2
 #define _MavLinkSerialBaud  57600
 #define MAVLINK_P_TX        1
 #define MAVLINK_P_RX        0
@@ -44,14 +73,9 @@
 * *******************************************************
 */
 //Single Cell LiPO monitor
-#define MAXCELLS 4
+#define MAXCELLS 6  //no more than 6 are currently supported
+#define ANALOG_SAMPLE_BITS 13
 
-// 4S network with customer resistors:
-// A    B     =Volt Range
-// 993  3320  3.2330
-//1960  1240  3.2550
-//3600  1240  3.2281
-//5110  1240  3.2806
 #define CELL_DIVIDER1 1910.652081
 #define CELL_DIVIDER2 961.8219697
 #define CELL_DIVIDER3 635.9153519
@@ -63,7 +87,7 @@
 #define ANALOG4 4
 
 //LED Control
-#define LEDSPERARM 8
+#define LEDSPERARM 27
 
 /*
 * *******************************************************
@@ -86,7 +110,7 @@
 #define DEBUG_APM_STATUSTEXT                // MSG #254 -
 #define DEBUG_APM_PARSE_STATUSTEXT
 #define DEBUG_GIMBAL_HEARTBEAT
-#define DEBUG_OTHER_HEARTBEAT
+//#define DEBUG_PROCESSING_STATE
 
 // *** DEBUG FrSkySPort Telemetry:
 #define DEBUG_FrSkySportTelemetry
@@ -101,6 +125,6 @@
 
 // *** DEBUG other things:
 #define DEBUG_AVERAGE_VOLTAGE
-#define DEBUG_LIPO_SINGLE_CELL_MONITOR 0  //SET TO 1 TO TURN ON
+#define DEBUG_LIPO_SINGLE_CELL_MONITOR 1  //SET TO 1 TO TURN ON
 
 #endif

@@ -1,4 +1,23 @@
-// LedColorFunctions.h
+#pragma region Copyright
+//This file is part of Pixhawk Plus
+//
+//Jim Rowe Copyright (c) 2015
+//https://github.com/jrowe88/PixhawkPlus
+//
+//Pixhawk Plus is free software : you can redistribute it and / or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Foobar is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with Pixhawk Plus. If not, see <http://www.gnu.org/licenses/>.
+//
+#pragma endregion
 
 #ifndef _LEDCOLORFUNCTIONS_h
 #define _LEDCOLORFUNCTIONS_h
@@ -12,6 +31,12 @@
 #include <FastLED.h>
 #include <wiring.h>
 
+/// <summary>
+/// Functions to create patterns and perform basic color manipulations of RGB colors.
+/// Functions can be used to create data that fits into "n" number of frames, so
+/// effects like pulsing, color changing, etc. can be created in a small stream
+/// of frames.
+/// </summary>
 class LedColorHelpers
 {
 public:
@@ -33,24 +58,8 @@ public:
 	static void CreateLinearRamp(uint8_t values, uint8_t* wave, int period);
 	static void CreateRainbow(uint8_t values, int* matrix);
 	static void CreateJPLRedBlue(uint8_t values, int* matrix, uint8_t redBlue);
-
-	///<summary>
-	///  Dims a color by a 0-1 factor (smaller factor means dimmer)
-	///</summary>
-	static inline int Dim(int color, double factor)
-	{
-		CRGB c(color);
-		return GetColorCode(c.fadeLightBy((uint8_t)(255 - (255 * factor / 1.0))));
-	}
-
-	///<summary>
-	///  Dims a color by a 0-255 factor (smaller factor means dimmer)
-	///</summary>
-	static inline int dim(int color, uint8_t factor)
-	{
-		CRGB c(color);
-		return GetColorCode(c.fadeLightBy(255 - factor));
-	}
+	static void Gamma(CRGB& rgb);
+	static int Dim(int color, double factor);
 
 	///<summary>
 	///  Get the 24-bit color code from a CRGB structure
@@ -58,23 +67,15 @@ public:
 	static inline int GetColorCode(CRGB color)
 	{
 		return color.r << 16 | color.g << 8 | color.b;
-	}
-
+	}	
 
 private:
 	
-
+	static const uint8_t _gammaR[256];
+	static const uint8_t _gammaG[256];
+	static const uint8_t _gammaB[256];
 	
 };
-
-
-
-
-
-
-
-
-
 
 #endif
 

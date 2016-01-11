@@ -16,6 +16,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="PixhawkPlus.ino" />
+    <None Include="README.md" />
+    <None Include="LICENSE.md" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MavlinkInterpreter.h">

@@ -1,102 +1,109 @@
-/**
- *
- * Class LSCM, part of MavLink_FrSkySPort
- * 
- * Copyright (C) 2015 Michael Wolkstein
- * https://github.com/Clooney82/MavLink_FrSkySPort
- * 
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY, without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
- * 
- * Class definition of Wolke lipo-single-cell-monitor
- * *******************************************
- * This will monitor 1 - 8 cells of your lipo.
- * It display the low cell, the high cell and the difference between this cells
- * this will give you a quick overview about your lipo _status and if the lipo is well balanced
- *
- * detailed informations and schematics here
- *
- */
+#pragma region Copyright
+//This file is part of Pixhawk Plus
+//
+//Jim Rowe Copyright (c) 2015
+//https://github.com/jrowe88/PixhawkPlus
+//
+//  Original concept and big props to Rolf Blomgren - http://diydrones.com/forum/topics/amp-to-frsky-x8r-sport-converter
+//  Adapted and modified from numerous other contributors:
+//     Michael Wolkstein - https://github.com/Clooney82/MavLink_FrSkySPort/   
+//
+//Pixhawk Plus is free software : you can redistribute it and / or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Foobar is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with Pixhawk Plus. If not, see <http://www.gnu.org/licenses/>.
+//
+#pragma endregion
 
-#ifndef _LSCM_H_
-#define _LSCM_H_
+#ifndef _LIPOSINGLECELLMONITOR_H_
+#define _LIPOSINGLECELLMONITOR_H_
 
 #include "Arduino.h"
 #include "MAVLinkData.h"
 
+/// <summary>
+/// Calculates individual cell voltage using data from balance plug inputs.
+/// supports up to 6S batteries.
+/// 
+/// Assumes input from hardware that scales the voltage to within the range of the
+/// analog monitors using a voltage divider pair of resistors.  Specify the scaling factors in terms of cell divider
+/// values based on the R1 and R2 resistor values.
+/// https://en.wikipedia.org/wiki/Voltage_divider
+/// </summary>
 class LipoSingleCellMonitor {
 
 public:
     
-    /**
-    \ingroup MavLink_FrSkySPort
-    \brief Overloaded Constructor of LSCM Object
-    \descriptions construct LSCM minimal with cells count.
-    \example LSCM lscm(3, 13, 0.99);
-    \args
-    \cells how many cells connected
-    \analogReadResolution on teensy3.x 13 bit as default    
-    */	
-	LipoSingleCellMonitor(uint8_t cells, uint8_t analogReadResolution, MAVLinkData *data);
+    /// <summary>
+    /// Standard constructor
+    /// </summary>
+    /// <param name="cells">Number of cells in the battery</param>
+    /// <param name="analogReadResolution">Analog resolution.  Default is 13</param>
+    /// <param name="data">MAVLink data packats</param>
+	LipoSingleCellMonitor(uint8_t cells, uint8_t analogReadResolution, MAVLinkData *data, float analogRefVoltage = 3.32);
     
-    /**
-    \brief main-process-call of LSCM. 
-    \descriptions: must called in main loop.
-    */
+    /// <summary>
+    /// Process the cell voltage.  Timing is subject to _minSamplePeriod
+    /// </summary>
     void Process();
     
-    /**
-    \brief returns disered Cell voltage 0-n based on lipocells. 
-    \descriptions returned an uint32_t of called lipocell.
-    */   
-    uint32_t GetCellVoltageAsUint32_T(uint8_t cell);
+	/// <summary>
+	/// Individual cell voltage in volts
+	/// </summary>
+	/// <param name="cell"></param>
+	/// <returns></returns>
+    float GetCellVoltage(uint8_t cell);
 
-    /**
-    \brief returns Cell voltage sum from al Cells. 
-    \descriptions returned an int32_t Cell sum.
-    */ 
-    int32_t GetAllLipoCells();
+    /// <summary>
+    /// Total voltage of all cells
+    /// </summary>
+    /// <returns></returns>
+    float GetAllLipoCells();
     
-    /**
-    \brief returns quantity of really connected cells. 
-    \descriptions returned an uint8_t of real connected cells.
-    */ 
+    /// <summary>
+    /// Cells that are connected
+    /// </summary>
+    /// <returns></returns>
     uint8_t GetCellsInUse();
     
-    /**
-    \brief quantity of cells at init. 
-    \descriptions returned an uint8_t of constructer maxcells.
-    */
+    /// <summary>
+    /// Number of cells specified
+    /// </summary>
+    /// <returns></returns>
     uint8_t GetMaxCells();
     
-    /**
-    \brief debug. 
-    \descriptions enable disable debug.
-    */
+    /// <summary>
+    /// Enable serial debugging.  By default it is not enabled; use this method to toggle.
+    /// </summary>
+    /// <param name="debug"></param>
     void SetDebug(bool debug);
 
-    /**
-    \brief Overloaded Function of LSCM setCustomCelldivider
-    */
-    void SetCustomCellDivider(double a);
-    void SetCustomCellDivider(double a, double b);
-    void SetCustomCellDivider(double a, double b, double c);
-    void SetCustomCellDivider(double a, double b, double c, double d);
-    void SetCustomCellDivider(double a, double b, double c, double d, double e);
-    void SetCustomCellDivider(double a, double b, double c, double d, double e, double f);       
+    /// <summary>
+    /// Set the voltage ratio/transfer function values.  Values are calculated as follows:
+    ///   Vin = Vout * H
+	///   H = R2 / (R2 + R1)
+	/// </summary>
+	/// <param name="a"></param>
+    void SetVoltageRatio(double H1);
+    void SetVoltageRatio(double H1, double H2);
+    void SetVoltageRatio(double H1, double H2, double H3);
+    void SetVoltageRatio(double H1, double H2, double H3, double H4);
+    void SetVoltageRatio(double H1, double H2, double H3, double H4, double H5);
+    void SetVoltageRatio(double H1, double H2, double H3, double H4, double H5, double H6);       
 
+	/// <summary>
+	/// Set the pins used for analog reading.  Can be any pins from your board that are not used
+	/// by other modules and can read analog signals.
+	/// </summary>
+	/// <param name="a"></param>
     void SetCustomPins(int32_t a);
     void SetCustomPins(int32_t a, int32_t b);
     void SetCustomPins(int32_t a, int32_t b, int32_t c);   
@@ -105,47 +112,37 @@ public:
     void SetCustomPins(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e, int32_t f);
     
 private:
-    
-	MAVLinkData *_messages;
+	static const uint8_t _MAXCELLS = 6;
+	const uint8_t _analogreadMinThreshold = 100;         // threshold for connected zelldetection in mV
+	const float _maxVoltsPerCell = 4.2;
+	const uint32_t _minSamplePeriod = 50; //min ms between samples
 
-    /**
-    \descriptions init LSCM object variables and arrays. automatically called by constructor
-    */
-    void Initialize(uint8_t cells, uint8_t analogReadReso, float smoothness);
-
-    /**
-    \descriptions set Celldivider
-    */
-    void SetCellDivider(double a, double b, double c, double d, double e, double f);    
-    
-    void SetPins(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e, int32_t f);
-    
-    /**
-    \brief main Array which holds software deviders. 
-    \descriptions this 13bit default divider are used if LSCM object will init. do not change this!
-    */
-    double _LIPOCELL_1TO8[13] =
+	float _referenceVoltage = 3.32; //as measured from Teensy3.2
+	uint32_t _sampleLimitTimer = 20;
+	uint8_t _resolutionBits = 13;
+	MAVLinkData *_messages;      
+	int32_t *_pins; //pin assignments
+    double _individualCellDivisor[_MAXCELLS] =
     {
-      1913.528953519,
-      933.688035297,
-      622.955076603,
-      473.787040052,
-      373.105567418,
-      317.423580786      
+		1899.14213,
+		956.02786,
+		632.08454,
+		481.77782,
+		380.50860,
+		313.29126
     };
-    
-    bool _debug;
-    double *_individualcelldivider;
-    uint8_t _analogread_threshold;         // threshold for connected zelldetection in mV
-    uint8_t _cells_in_use;
-    int32_t *_zelle;
-    double *_cell;
-    int32_t _alllipocells;
-    float _lp_filter_val; // this determines smoothness  - .0001 is max  0.99 is off (no smoothing)
-    double *_smoothedVal; // this holds the last loop value
-    uint8_t _maxcells;
-    int32_t *_pins; //pin assignments
-    
+    		
+	bool _debug;    
+	uint8_t _expectedCells = _MAXCELLS;
+    uint8_t _cellsInUse;    
+    BufferedSmoothValue<float> _cellVoltages[_MAXCELLS];
+	BufferedSmoothValue<float> _totalVoltage;
+
+    //Methods
+	void Initialize(uint8_t cells, uint8_t analogReadReso);
+	void SetCellDivider(double a, double b, double c, double d, double e, double f);
+	void SetPins(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e, int32_t f);
+	void SampleVoltage();
 };
-#endif /* _LSCM_H_ */
+#endif
  

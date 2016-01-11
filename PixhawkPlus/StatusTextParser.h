@@ -5,6 +5,9 @@
 #include <WString.h>
 #include "MAVLinkData.h"
 
+/// <summary>
+/// Text parsing from mavlink text into text codes for transmitting to OpenTX for processing.
+/// </summary>
 class StatusTextParser
 {
 public:
