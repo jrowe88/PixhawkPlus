@@ -69,59 +69,9 @@ void LipoSingleCellMonitor::SetDebug(bool debug)
 	_debug = debug;
 }
 
-void LipoSingleCellMonitor::SetVoltageRatio(double a)
+void LipoSingleCellMonitor::SetVoltageRatio(double h1, double h2, double h3, double h4, double h5, double h6)
 {
-	SetCellDivider(a, 0.0, 0.0, 0.0, 0.0, 0.0);
-}
-
-void LipoSingleCellMonitor::SetVoltageRatio(double a, double b)
-{
-	SetCellDivider(a, b, 0.0, 0.0, 0.0, 0.0);
-}
-
-void LipoSingleCellMonitor::SetVoltageRatio(double a, double b, double c)
-{
-	SetCellDivider(a, b, c, 0.0, 0.0, 0.0);
-}
-
-void LipoSingleCellMonitor::SetVoltageRatio(double a, double b, double c, double d)
-{
-	SetCellDivider(a, b, c, d, 0.0, 0.0);
-}
-
-void LipoSingleCellMonitor::SetVoltageRatio(double a, double b, double c, double d, double e)
-{
-	SetCellDivider(a, b, c, d, e, 0.0);
-}
-
-void LipoSingleCellMonitor::SetVoltageRatio(double a, double b, double c, double d, double e, double f)
-{
-	SetCellDivider(a, b, c, d, e, f);
-}
-
-void LipoSingleCellMonitor::SetCustomPins(int32_t a)
-{
-	SetPins(a, 0, 0, 0, 0, 0);
-}
-
-void LipoSingleCellMonitor::SetCustomPins(int32_t a, int32_t b)
-{
-	SetPins(a, b, 0, 0, 0, 0);
-}
-
-void LipoSingleCellMonitor::SetCustomPins(int32_t a, int32_t b, int32_t c)
-{
-	SetPins(a, b, c, 0, 0, 0);
-}
-
-void LipoSingleCellMonitor::SetCustomPins(int32_t a, int32_t b, int32_t c, int32_t d)
-{
-	SetPins(a, b, c, d, 0, 0);
-}
-
-void LipoSingleCellMonitor::SetCustomPins(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e)
-{
-	SetPins(a, b, c, d, e, 0);
+	SetCellDivider(h1, h2, h3, h4, h5, h6);
 }
 
 void LipoSingleCellMonitor::SetCustomPins(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e, int32_t f)
@@ -146,7 +96,7 @@ void LipoSingleCellMonitor::SampleVoltage()
 		}
 
 		//Smooth in a FIR filter
-		float voltage = aread[i] / _individualCellDivisor[i];		
+		float voltage = aread[i] / _individualCellDivisor[i];
 		_cellVoltages[i].SetValue(voltage);
 		cumVoltage += voltage;
 	}
@@ -191,14 +141,14 @@ void LipoSingleCellMonitor::Initialize(uint8_t expectedCells, uint8_t analogRead
 void LipoSingleCellMonitor::SetCellDivider(double h1, double h2, double h3, double h4, double h5, double h6)
 {
 	double* ptrs[6] = { &h1, &h2, &h3, &h4, &h5, &h6 };
-	uint16_t resBits = (2 ^ _resolutionBits) - 1;
+	uint16_t resolutionRange = (2 ^ _resolutionBits) - 1;  //range of integer values returned based on the resolution bits
 
 	//Convert the ratios into divsors to simplify the per-reading processing
 	for (size_t i = 0; i < 6; i++)
 	{
 		if (*ptrs[i] > 0.0)
 		{			
-			_individualCellDivisor[i] = *ptrs[i] / _referenceVoltage * resBits;
+			_individualCellDivisor[i] = *ptrs[i] / _referenceVoltage * resolutionRange;
 			if(_debug)
 			{
 				debugSerial.printf("%d\tCell Divisor %d: %3.5f", millis(), i, _individualCellDivisor[i]);

@@ -29,6 +29,8 @@
 #include "Arduino.h"
 #include "MAVLinkData.h"
 
+#define NOPIN -1
+
 /// <summary>
 /// Calculates individual cell voltage using data from balance plug inputs.
 /// supports up to 6S batteries.
@@ -91,25 +93,15 @@ public:
     ///   Vin = Vout * H
 	///   H = R2 / (R2 + R1)
 	/// </summary>
-	/// <param name="a"></param>
-    void SetVoltageRatio(double H1);
-    void SetVoltageRatio(double H1, double H2);
-    void SetVoltageRatio(double H1, double H2, double H3);
-    void SetVoltageRatio(double H1, double H2, double H3, double H4);
-    void SetVoltageRatio(double H1, double H2, double H3, double H4, double H5);
-    void SetVoltageRatio(double H1, double H2, double H3, double H4, double H5, double H6);       
+	/// <param name="a"></param>    
+    void SetVoltageRatio(double H1, double H2=0, double H3=0, double H4=0, double H5=0, double H6=0);       
 
 	/// <summary>
 	/// Set the pins used for analog reading.  Can be any pins from your board that are not used
 	/// by other modules and can read analog signals.
 	/// </summary>
-	/// <param name="a"></param>
-    void SetCustomPins(int32_t a);
-    void SetCustomPins(int32_t a, int32_t b);
-    void SetCustomPins(int32_t a, int32_t b, int32_t c);   
-    void SetCustomPins(int32_t a, int32_t b, int32_t c, int32_t d);
-    void SetCustomPins(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e);
-    void SetCustomPins(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e, int32_t f);
+	/// <param name="a"></param>    
+    void SetCustomPins(int32_t a, int32_t b = NOPIN, int32_t c = NOPIN, int32_t d = NOPIN, int32_t e = NOPIN, int32_t f = NOPIN);
     
 private:
 	static const uint8_t _MAXCELLS = 6;
@@ -122,15 +114,7 @@ private:
 	uint8_t _resolutionBits = 13;
 	MAVLinkData *_messages;      
 	int32_t *_pins; //pin assignments
-    double _individualCellDivisor[_MAXCELLS] =
-    {
-		1899.14213,
-		956.02786,
-		632.08454,
-		481.77782,
-		380.50860,
-		313.29126
-    };
+    double _individualCellDivisor[_MAXCELLS] = { 1899.14213, 956.02786, 632.08454, 482.51706, 380.50860, 313.29126 };  //default values
     		
 	bool _debug;    
 	uint8_t _expectedCells = _MAXCELLS;
@@ -146,3 +130,4 @@ private:
 };
 #endif
  
+

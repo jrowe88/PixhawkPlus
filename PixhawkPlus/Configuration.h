@@ -76,15 +76,21 @@
 #define MAXCELLS 6  //no more than 6 are currently supported
 #define ANALOG_SAMPLE_BITS 13
 
-#define CELL_DIVIDER1 1910.652081
-#define CELL_DIVIDER2 961.8219697
-#define CELL_DIVIDER3 635.9153519
-#define CELL_DIVIDER4 484.6976855
+//Voltage ratio for resistor network
+//See: 
+#define CELL_DIVIDER1_RATIO 0.76977
+#define CELL_DIVIDER2_RATIO 0.38750
+#define CELL_DIVIDER3_RATIO 0.25620
+#define CELL_DIVIDER4_RATIO 0.19558
+#define CELL_DIVIDER5_RATIO 0.15423
+#define CELL_DIVIDER6_RATIO 0.12698
 
 #define ANALOG1 7
 #define ANALOG2 6
 #define ANALOG3 5
 #define ANALOG4 4
+#define ANALOG5 8
+#define ANALOG6 9
 
 //LED Control
 #define LEDSPERARM 27

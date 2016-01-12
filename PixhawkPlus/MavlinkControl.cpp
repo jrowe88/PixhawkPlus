@@ -26,7 +26,7 @@
 void MavLinkController::Initialize()
 {
 	debugSerial.begin(debugSerialBaud);
-	_lscm->SetVoltageRatio(CELL_DIVIDER1, CELL_DIVIDER2, CELL_DIVIDER3, CELL_DIVIDER4);
+	_lscm->SetVoltageRatio(CELL_DIVIDER1_RATIO, CELL_DIVIDER2_RATIO, CELL_DIVIDER3_RATIO, CELL_DIVIDER4_RATIO);
 	_lscm->SetCustomPins(ANALOG1, ANALOG2, ANALOG3, ANALOG4);
 	_lscm->SetDebug(DEBUG_LIPO_SINGLE_CELL_MONITOR);
 	_leds->Initialize();
